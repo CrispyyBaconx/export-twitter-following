@@ -21,13 +21,6 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
     }
     const formattedCookie = Object.fromEntries(unformattedCookies.map(c => [c.name, c.value]))
 
-    const variables = {
-        userId: userId,
-        cursor: cursor,
-        count: 50, // ? Max per request
-        includePromotedContent: false
-    }
-
     const features = {
         responsive_web_graphql_exclude_directive_enabled: true,
         verified_phone_label_enabled: false,
@@ -60,6 +53,13 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         console.clear()
         console.log(`Getting following for user ${userId} - ${data.length} / ${limit}`)
 
+        const variables = {
+            userId: userId,
+            cursor: cursor,  // This will now update with each iteration
+            count: 50, // ? Max per request
+            includePromotedContent: false
+        }
+
         const response: TwitterResponse = await axios({
             method: "GET",
             url: `https://twitter.com/i/api/graphql/0yD6Eiv23DKXRDU9VxlG2A/Following?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
@@ -83,8 +83,7 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         })
 
         const entries = response.data.data.user.result.timeline.timeline.instructions
-            .find(instruction => instruction.type === "TimelineAddEntries")
-            ?.entries;
+            .find(instruction => instruction.type === "TimelineAddEntries")?.entries;
 
         if (!entries || entries.length === 0) {
             console.log("No more following to fetch");
