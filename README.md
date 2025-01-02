@@ -20,12 +20,13 @@ If you need help finding these, see the [Extra Info](#extra-info) section
 
 ### Steps
 1. Clone the repository
-2. Run `npm i`
-3. Run `tsx index.ts` (or whatever you want to use to run it im not your dad)
-4. Follow the prompts, or input the values as arguments 
-5. Wait a bit
-6. It should export a json file to the same directory as the script called following.json
-7. Have fun
+2. Make a cookie.json, .env and fill them out
+3. Run `npm i`
+4. Run `tsx index.ts` (or whatever you want to use to run it im not your dad)
+5. Follow the prompts, or input the values as arguments 
+6. Wait a bit
+7. It should export a json file to the same directory as the script called following.json
+8. Have fun
 
 ## Extra Info
 
