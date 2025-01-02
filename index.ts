@@ -55,7 +55,7 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
 
         const variables = {
             userId: userId,
-            cursor: cursor,  // This will now update with each iteration
+            cursor: cursor,
             count: 50, // ? Max per request
             includePromotedContent: false
         }
@@ -158,6 +158,12 @@ const main = async () => {
             type: 'number',
             description: 'The max number of following to get',
         })
+        .option('outputInfo', {
+            alias: 'o',
+            type: 'string',
+            description: 'What info to output about the user (leave blank for all)',
+            choices: ["", "username"]
+        })
         .option('help', {
             alias: 'h',
             type: 'boolean',
@@ -167,6 +173,7 @@ const main = async () => {
     
     let userId: string | undefined = argv.userId;
     let limit: number | undefined = argv.limit;
+    let outputInfo: string | undefined = argv.outputInfo;
     if (argv.csrfToken) {
         xCsrfToken = argv.csrfToken;
     }
@@ -201,8 +208,21 @@ const main = async () => {
 
     const following = await getTwitterFollowing(userId, limit, xCsrfToken)
 
+    let output: Array<string | UserResult> = []
+    if (outputInfo === "username") {
+        following.forEach((user: UserResult) => {
+            try {
+                output.push(user.legacy.screen_name)
+            } catch (e) {
+                console.error("Error parsing user: ", user);
+            }
+        })
+    } else {
+        output = following
+    }
+
     console.log(`Got ${following.length} following for user ${userId} - exporting to following.json...`)
-    fs.writeFileSync("following.json", JSON.stringify(following, null, 4))
+    fs.writeFileSync("following.json", JSON.stringify(output, null, 4))
     console.log("Done!")
 }
 
