@@ -158,7 +158,7 @@ const main = async () => {
             type: 'number',
             description: 'The max number of following to get',
         })
-        .option('outputInfo', {
+        .option('output', {
             alias: 'o',
             type: 'string',
             description: 'What info to output about the user (leave blank for all)',
@@ -173,7 +173,7 @@ const main = async () => {
     
     let userId: string | undefined = argv.userId;
     let limit: number | undefined = argv.limit;
-    let outputInfo: string | undefined = argv.outputInfo;
+    let outputInfo: string | undefined = argv.output;
     if (argv.csrfToken) {
         xCsrfToken = argv.csrfToken;
     }
