@@ -4,6 +4,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import inquirer from "inquirer";
 import fs from "fs";
+import { theme } from './theme'
+import progress from 'progress-estimator';
+import 'dotenv/config'
 
 const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCsrfToken: string) => {
     const data: UserResult[] = []
@@ -49,7 +52,14 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         responsive_web_enhance_cards_enabled: false,     
     }
 
+    const logger = progress({
+        theme: theme,
+    });
+
     while (data.length < limit) {
+        console.clear()
+        console.log(`Getting following for user ${userId} - ${data.length} / ${limit}`)
+
         const response: TwitterResponse = await axios({
             method: "GET",
             url: `https://twitter.com/i/api/graphql/0yD6Eiv23DKXRDU9VxlG2A/Following?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
@@ -121,35 +131,48 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         }
 
         // Random delay between requests
-        await new Promise(resolve => setTimeout(resolve, 5000 + Math.random() * 5000));
+        console.log(`Waiting for 5-10 seconds before next request...`)
+        // bar
+        const sleepPromise = new Promise<void>(resolve => setTimeout(resolve, 5000 + Math.random() * 5000));
+        await logger(sleepPromise, 'Waiting for 5-10 seconds before next request...')
     }
 
     return data;
 };
 
 const main = async () => {
+    // load env
+    let xCsrfToken = process.env.X_CSRF_TOKEN || '';
+
     // get args
     const argv = yargs(hideBin(process.argv))
         .option('userId', {
             alias: 'u',
             type: 'string',
-            description: 'The user ID to get following for (find this in the network request to twitters api)',
+            description: 'The user ID to get following for (check readme if you need help)',
         })
         .option('csrfToken', {
             alias: 'x',
             type: 'string',
-            description: 'The x-csrf-token to use for the request (find this in the network request to twitters api)',
+            description: 'The x-csrf-token to use for the request (check readme if you need help - overrides .env)',
         })
         .option('limit', {
             alias: 'l',
             type: 'number',
-            description: 'The number of following to get',
+            description: 'The max number of following to get',
+        })
+        .option('help', {
+            alias: 'h',
+            type: 'boolean',
+            description: 'Show help',
         })
         .parseSync();
-
-    let userId = argv.userId;
-    let xCsrfToken = argv.csrfToken;
-    let limit = argv.limit;
+    
+    let userId: string | undefined = argv.userId;
+    let limit: number | undefined = argv.limit;
+    if (argv.csrfToken) {
+        xCsrfToken = argv.csrfToken;
+    }
 
     if (!userId) {
         userId = await inquirer.prompt<{ userId: string }>([

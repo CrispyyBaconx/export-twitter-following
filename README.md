@@ -37,5 +37,5 @@ If you need help finding the user id, open up the network tab in devtools on the
 
 ![list.json?include_profile_intersititial_type=1](example.png)
 
-Click on the request to open it up, you can see it as a parameter in the url. Copy it and use it here. You can also obtain the x-csrf-token from the request headers if you scroll down a bit in this same request.
+Click on the request to open it up, you can see it as a parameter in the url. You can also obtain the x-csrf-token from the request headers if you scroll down a bit in this same request, copy it and stick it in your .env file.
 
