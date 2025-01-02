@@ -13,13 +13,13 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
     let cursor: string | null = null
 
     // load cookie
-    const cookie: TwitterCookie[] = JSON.parse(fs.readFileSync("cookie.json", "utf8"))
-    const authToken = cookie.find(c => c.name === "auth_token")?.value
+    const unformattedCookies: TwitterCookie[] = JSON.parse(fs.readFileSync("cookie.json", "utf8")).filter((c: TwitterCookie) => c.name !== "_twitter_sess")
+    const authToken = unformattedCookies.find(c => c.name === "auth_token")?.value
     if (!authToken) {
         console.error("Auth token not found in cookie, please run the script again with a valid cookie");
         process.exit(1);
     }
-    const stringifiedCookie = cookie.map(c => `${c.name}=${c.value}`).join("; ")
+    const formattedCookie = Object.fromEntries(unformattedCookies.map(c => [c.name, c.value]))
 
     const variables = {
         userId: userId,
@@ -78,7 +78,7 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
                 'sec-fetch-site': 'none',
                 'sec-gpc': '1',
                 'x-csrf-token': xCsrfToken,
-                'cookie': stringifiedCookie
+                'cookie': Object.entries(formattedCookie).map(([key, value]) => `${key}=${value}`).join('; ')
             }
         })
 
@@ -120,7 +120,7 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
             .map((entry) => entry.content.itemContent.user_results.result);
         
         data.push(...newUsers);
-        console.log(`Got ${data.length} following...`);
+        console.log(`Getting ${data.length} following...`);
 
         // Update cursor for next request
         cursor = bottomCursor.content.value;
@@ -131,10 +131,8 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         }
 
         // Random delay between requests
-        console.log(`Waiting for 5-10 seconds before next request...`)
-        // bar
         const sleepPromise = new Promise<void>(resolve => setTimeout(resolve, 5000 + Math.random() * 5000));
-        await logger(sleepPromise, 'Waiting for 5-10 seconds before next request...')
+        await logger(sleepPromise, 'Waiting for 5-10 seconds before next request...', { estimate: 5000 + Math.random() * 5000 })
     }
 
     return data;
