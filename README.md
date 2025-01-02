@@ -41,4 +41,4 @@ Click on the request to open it up, you can see it as a parameter in the url. Yo
 
 ### Errors
 
-If you get a 353 error, you're probably using an old cookie or a mismatched csrf token and cookie ct0 token. You can try to get a new one by running the script again and inputting your cookie + replacing the x-csrf-token with the one from the request headers.
+If you get a 353 error, you're probably using an old cookie or a mismatched csrf token and cookie ct0 token. You can try to get a new one by running the steps above again and inputting your new cookie + replacing the x-csrf-token with the one from the new request headers.
