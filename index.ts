@@ -188,7 +188,7 @@ const main = async () => {
 
     if (!limit) {
         limit = await inquirer.prompt<{ limit: number }>([
-            { name: 'limit', message: 'Enter the number of following to get (optional, leave blank for all)', type: 'number', validate: (input) => (input && input > 0) ? true : "Please enter a valid number greater than 0" }
+            { name: 'limit', message: 'Enter the number of following to get (optional, leave blank for all)', type: 'number' }
         ]).then((res) => res.limit)
     }
 
