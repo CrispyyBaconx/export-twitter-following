@@ -1,6 +1,6 @@
 # Export Twitter Following
 
-This script will export any users following a given user to a json file for your viewing pleasure
+This script will export any users a given user is "following" to a json file for your viewing pleasure.
 This could probably also be used to export followers, but I didn't make it to do that because I didn't need it to but you can probably modify it to do that yourself.
 
 ## Prerequisites
@@ -20,12 +20,13 @@ If you need help finding these, see the [Extra Info](#extra-info) section
 
 ### Steps
 1. Clone the repository
-2. Run `npm i`
-3. Run `tsx index.ts` (or whatever you want to use to run it im not your dad)
-4. Follow the prompts, or input the values as arguments 
-5. Wait a bit
-6. It should export a json file to the same directory as the script called following.json
-7. Have fun
+2. Make a cookie.json, .env and fill them out
+3. Run `npm i`
+4. Run `tsx index.ts` (or whatever you want to use to run it im not your dad)
+5. Follow the prompts, or input the values as arguments 
+6. Wait a bit
+7. It should export a json file to the same directory as the script called following.json
+8. Have fun
 
 ## Extra Info
 
@@ -41,4 +42,4 @@ Click on the request to open it up, you can see it as a parameter in the url. Yo
 
 ### Errors
 
-If you get a 353 error, you're probably using an old cookie or a mismatched csrf token and cookie ct0 token. You can try to get a new one by running the script again and inputting your cookie + replacing the x-csrf-token with the one from the request headers.
+If you get a 353 error, you're probably using an old cookie or a mismatched csrf token and cookie ct0 token. You can try to get a new one by running the steps above again and inputting your new cookie + replacing the x-csrf-token with the one from the new request headers.
