@@ -12,6 +12,13 @@ export interface TwitterCookie {
 	value: string;
 }
 
+export interface TwitterVariables {
+	userId: string;
+	cursor: string | null;
+	count: number;
+	includePromotedContent: boolean;
+}
+
 export interface TwitterResponse {
 	data: {
 		data: {

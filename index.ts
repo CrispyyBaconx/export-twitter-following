@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TimelineEntry, type TwitterResponse, type UserResult, type TwitterCookie } from "./TwitterResponse";
+import { TimelineEntry, type TwitterResponse, type UserResult, type TwitterCookie, TwitterVariables } from "./TwitterResponse";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import inquirer from "inquirer";
@@ -8,7 +8,7 @@ import { theme } from './theme'
 import progress from 'progress-estimator';
 import 'dotenv/config'
 
-const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCsrfToken: string) => {
+const getTwitterInfo = async (userId: string, limit: number = Infinity, xCsrfToken: string, mode: string) => {
     const data: UserResult[] = []
     let cursor: string | null = null
 
@@ -53,34 +53,87 @@ const getTwitterFollowing = async (userId: string, limit: number = Infinity, xCs
         console.clear()
         console.log(`Getting following for user ${userId} - ${data.length} / ${limit}`)
 
-        const variables = {
+        const variables: TwitterVariables = {
             userId: userId,
             cursor: cursor,
             count: 50, // ? Max per request
             includePromotedContent: false
         }
 
-        const response: TwitterResponse = await axios({
-            method: "GET",
-            url: `https://twitter.com/i/api/graphql/0yD6Eiv23DKXRDU9VxlG2A/Following?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
-            headers: {
-                'accept': '*/*',
-                'accept-language': 'en-US,en;q=0.9',
-                // this is a generic bearer token for twitter, not sensitive
-                'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-                'priority': 'u=1, i',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Brave";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'sec-fetch-dest': 'empty',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'none',
-                'sec-gpc': '1',
-                'x-csrf-token': xCsrfToken,
-                'cookie': Object.entries(formattedCookie).map(([key, value]) => `${key}=${value}`).join('; ')
-            }
-        })
+        let response: TwitterResponse | null = null;
+        switch (mode) {
+            case "following":
+                response = await axios({
+                    method: "GET",
+                    url: `https://twitter.com/i/api/graphql/0yD6Eiv23DKXRDU9VxlG2A/Following?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
+                    headers: {
+                        'accept': '*/*',
+                        'accept-language': 'en-US,en;q=0.9',
+                        'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+                        'priority': 'u=1, i',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                        'sec-ch-ua': '"Brave";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                        'sec-ch-ua-mobile': '?0',
+                        'sec-ch-ua-platform': '"Windows"',
+                        'sec-fetch-dest': 'empty',
+                        'sec-fetch-mode': 'cors',
+                        'sec-fetch-site': 'none',
+                        'sec-gpc': '1',
+                        'x-csrf-token': xCsrfToken,
+                        'cookie': Object.entries(formattedCookie).map(([key, value]) => `${key}=${value}`).join('; ')
+                    }
+                })
+                break;
+            case "followers":
+                response = await axios({
+                    method: "GET",
+                    url: `https://twitter.com/i/api/graphql/j9ien6V5wUi7rs_1HQd9Sg/Followers?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
+                    headers: {
+                        'accept': '*/*',
+                        'accept-language': 'en-US,en;q=0.9',
+                        'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+                        'priority': 'u=1, i',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                        'sec-ch-ua': '"Brave";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                        'sec-ch-ua-mobile': '?0',
+                        'sec-ch-ua-platform': '"Windows"',
+                        'sec-fetch-dest': 'empty',
+                        'sec-fetch-mode': 'cors',
+                        'sec-fetch-site': 'none',
+                        'sec-gpc': '1',
+                        'x-csrf-token': xCsrfToken,
+                        'cookie': Object.entries(formattedCookie).map(([key, value]) => `${key}=${value}`).join('; ')
+                    }
+                })
+                break;
+            case "verified":
+                response = await axios({
+                    method: "GET",
+                    url: `https://twitter.com/i/api/graphql/SNo9jRAYTGlTSB1IoBSqCw/BlueVerifiedFollowers?variables=${encodeURIComponent(JSON.stringify(variables))}&features=${encodeURIComponent(JSON.stringify(features))}`,
+                    headers: {
+                        'accept': '*/*',
+                        'accept-language': 'en-US,en;q=0.9',
+                        'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+                        'priority': 'u=1, i',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                        'sec-ch-ua': '"Brave";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                        'sec-ch-ua-mobile': '?0',
+                        'sec-ch-ua-platform': '"Windows"',
+                        'sec-fetch-dest': 'empty',
+                        'sec-fetch-mode': 'cors',
+                        'sec-fetch-site': 'none',
+                        'sec-gpc': '1',
+                        'x-csrf-token': xCsrfToken,
+                        'cookie': Object.entries(formattedCookie).map(([key, value]) => `${key}=${value}`).join('; ')
+                    }
+                })
+                break;
+        }
+
+        if (!response) {
+            console.error("No response from Twitter");
+            process.exit(1);
+        }
 
         const entries = response.data.data.user.result.timeline.timeline.instructions
             .find(instruction => instruction.type === "TimelineAddEntries")?.entries;
@@ -164,6 +217,13 @@ const main = async () => {
             description: 'What info to output about the user (leave blank for all)',
             choices: ["", "username"]
         })
+        .option('mode', {
+            alias: 'm',
+            type: 'string',
+            description: 'What mode to run the script in (leave blank for following)',
+            choices: ["following", "followers", "verified"],
+            default: "following"
+        })
         .option('help', {
             alias: 'h',
             type: 'boolean',
@@ -174,8 +234,14 @@ const main = async () => {
     let userId: string | undefined = argv.userId;
     let limit: number | undefined = argv.limit;
     let outputInfo: string | undefined = argv.output;
+    let mode: string | undefined = argv.mode;
+
     if (argv.csrfToken) {
         xCsrfToken = argv.csrfToken;
+    }
+
+    if (argv.mode) {
+        mode = argv.mode;
     }
 
     if (!userId) {
@@ -206,23 +272,59 @@ const main = async () => {
         process.exit(1);
     }
 
-    const following = await getTwitterFollowing(userId, limit, xCsrfToken)
-
     let output: Array<string | UserResult> = []
-    if (outputInfo === "username") {
-        following.forEach((user: UserResult) => {
-            try {
-                output.push(user.legacy.screen_name)
-            } catch (e) {
-                console.error("Error parsing user: ", user);
+    switch (mode) {
+        case "following":
+            const following = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+
+            if (outputInfo === "username") {
+                following.forEach((user: UserResult) => {
+                    try {
+                        output.push(user.legacy.screen_name)
+                    } catch (e) {
+                        console.error("Error parsing user: ", user);
+                    }
+                })
+            } else {
+                output = following
             }
-        })
-    } else {
-        output = following
+            console.log(`Got ${following.length} following for user ${userId} - exporting to following.json...`)
+            fs.writeFileSync("following.json", JSON.stringify(output, null, 4))        
+
+            break;
+        case "followers":
+            const followers = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+
+            if (outputInfo === "username") {
+                followers.forEach((user: UserResult) => {
+                    try {
+                        output.push(user.legacy.screen_name)
+                    } catch (e) {
+                        console.error("Error parsing user: ", user);
+                    }
+                })
+            } else {
+                output = followers
+            }
+
+            console.log(`Got ${followers.length} followers for user ${userId} - exporting to followers.json...`)
+            fs.writeFileSync("followers.json", JSON.stringify(output, null, 4))
+            break;
+        case "verified":
+            const verified = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+            if (outputInfo === "username") {
+                verified.forEach((user: UserResult) => {
+                    output.push(user.legacy.screen_name)
+                })
+            } else {
+                output = verified
+            }
+
+            console.log(`Got ${verified.length} verified for user ${userId} - exporting to verified.json...`)
+            fs.writeFileSync("verified.json", JSON.stringify(output, null, 4))
+            break;
     }
 
-    console.log(`Got ${following.length} following for user ${userId} - exporting to following.json...`)
-    fs.writeFileSync("following.json", JSON.stringify(output, null, 4))
     console.log("Done!")
 }
 
