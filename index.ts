@@ -324,7 +324,7 @@ const main = async () => {
 
             break;
         case "followers":
-            const followers = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+            const followers = await getTwitterInfo(userId, limit, xCsrfToken, mode, debug)
 
             if (outputInfo === "username") {
                 followers.forEach((user: UserResult) => {
@@ -342,7 +342,7 @@ const main = async () => {
             fs.writeFileSync("followers.json", JSON.stringify(output, null, 4))
             break;
         case "verified":
-            const verified = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+            const verified = await getTwitterInfo(userId, limit, xCsrfToken, mode, debug)
             if (outputInfo === "username") {
                 verified.forEach((user: UserResult) => {
                     output.push(user.legacy.screen_name)
