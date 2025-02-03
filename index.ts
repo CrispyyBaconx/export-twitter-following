@@ -8,7 +8,7 @@ import { theme } from './theme'
 import progress from 'progress-estimator';
 import 'dotenv/config'
 
-const getTwitterInfo = async (userId: string, limit: number = Infinity, xCsrfToken: string, mode: string) => {
+const getTwitterInfo = async (userId: string, limit: number = Infinity, xCsrfToken: string, mode: string, debug: boolean = false) => {
     const data: UserResult[] = []
     let cursor: string | null = null
 
@@ -135,6 +135,30 @@ const getTwitterInfo = async (userId: string, limit: number = Infinity, xCsrfTok
             process.exit(1);
         }
 
+        if (!response.data.data) {
+            console.error("No data field in response");
+            if (debug) console.log("Response structure:", response.data);
+            process.exit(1);
+        }
+
+        if (!response.data.data.user) {
+            console.error("No user field in response");
+            if (debug) console.log("Response data structure:", response.data.data);
+            process.exit(1);
+        }
+
+        if (!response.data.data.user.result) {
+            console.error("No result field in user, you might have an invalid ID?");
+            if (debug) console.log("User structure:", response.data.data.user);
+            process.exit(1);
+        }
+
+        if (!response.data.data.user.result.timeline) {
+            console.error("No timeline field in result");
+            if (debug) console.log("Result structure:", response.data.data.user.result);
+            process.exit(1);
+        }
+
         const entries = response.data.data.user.result.timeline.timeline.instructions
             .find(instruction => instruction.type === "TimelineAddEntries")?.entries;
 
@@ -224,17 +248,24 @@ const main = async () => {
             choices: ["following", "followers", "verified"],
             default: "following"
         })
+        .option('debug', {
+            alias: 'd',
+            type: 'boolean',
+            description: 'Show debug information',
+        })
         .option('help', {
             alias: 'h',
             type: 'boolean',
             description: 'Show help',
         })
+
         .parseSync();
     
     let userId: string | undefined = argv.userId;
     let limit: number | undefined = argv.limit;
     let outputInfo: string | undefined = argv.output;
     let mode: string | undefined = argv.mode;
+    let debug: boolean | undefined = argv.debug;
 
     if (argv.csrfToken) {
         xCsrfToken = argv.csrfToken;
@@ -275,7 +306,7 @@ const main = async () => {
     let output: Array<string | UserResult> = []
     switch (mode) {
         case "following":
-            const following = await getTwitterInfo(userId, limit, xCsrfToken, mode)
+            const following = await getTwitterInfo(userId, limit, xCsrfToken, mode, debug)
 
             if (outputInfo === "username") {
                 following.forEach((user: UserResult) => {
