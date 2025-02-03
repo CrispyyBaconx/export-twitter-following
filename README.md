@@ -38,6 +38,8 @@ If you need help finding the user id, open up the network tab in devtools on the
 
 ![list.json?include_profile_intersititial_type=1](example.png)
 
+Alternatively, you can use this website to get the user id from their @: https://tweethunter.io/twitter-id-converter
+
 Click on the request to open it up, you can see it as a parameter in the url. You can also obtain the x-csrf-token from the request headers if you scroll down a bit in this same request, copy it and stick it in your .env file.
 
 ### Errors
