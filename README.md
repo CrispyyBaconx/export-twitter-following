@@ -1,7 +1,7 @@
 # Export Twitter Following
 
 This script will export any users a given user is "following" to a json file for your viewing pleasure.
-This could probably also be used to export followers, but I didn't make it to do that because I didn't need it to but you can probably modify it to do that yourself.
+This can also be used to export the followers & verified followers of any given account (check -help)
 
 ## Prerequisites
 
