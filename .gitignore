@@ -1,0 +1,7 @@
+node_modules/
+cookie.json
+.env
+following.json
+
+test.ts
+live_video_status.json
